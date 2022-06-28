@@ -24,10 +24,10 @@ SOFTWARE.
 
 #[[
 This function creates a backup of the variable to check and returns `true`, if
-the variable is different from the last CMake run. It creates two variables in
-the parent scope (`_LAST_RUN_CHECKED_${VARIABLE_NAME_TO_CHECK}`,
-`_LAST_RUN_DIFFERS_${VARIABLE_NAME_TO_CHECK}`). It also creates the backup cache
-variable (`_LAST_RUN_${VARIABLE_NAME_TO_CHECK}`).
+the variable is different from the last CMake run. It creates three variables
+in the cache (`_LAST_RUN_CHECKED_${VARIABLE_NAME_TO_CHECK}`,
+`_LAST_RUN_DIFFERS_${VARIABLE_NAME_TO_CHECK}`,
+`_LAST_RUN_${VARIABLE_NAME_TO_CHECK}`).
 \param IS_DIFFERENT The result variable name
 \param VARIABLE_NAME_TO_CHECK The variable name to check
 ]]
@@ -38,23 +38,33 @@ function (compare_to_last_run IS_DIFFERENT VARIABLE_NAME_TO_CHECK)
         # the result is always true.
         if (_LAST_RUN_${VARIABLE_NAME_TO_CHECK} STREQUAL ${VARIABLE_NAME_TO_CHECK})
             # Write the result to variable in local function scope.
-            set(_LAST_RUN_DIFFERS_${VARIABLE_NAME_TO_CHECK} False)
-            # Write the result to variable in parent scope. This is used as a
-            # cache for subsequent queries for the same variable during this run
-            # of CMake.
-            set(_LAST_RUN_DIFFERS_${VARIABLE_NAME_TO_CHECK} False PARENT_SCOPE)
+            set(
+                _LAST_RUN_DIFFERS_${VARIABLE_NAME_TO_CHECK}
+                False
+                CACHE
+                INTERNAL
+                "Result flag of ${VARIABLE_NAME_TO_CHECK} variable for this run."
+            )
         else ()
             # Write the result to variable in local function scope.
-            set(_LAST_RUN_DIFFERS_${VARIABLE_NAME_TO_CHECK} True)
-            # Write the result to variable in parent scope. This is used as a
-            # cache for subsequent queries for the same variable during this run
-            # of CMake.
-            set(_LAST_RUN_DIFFERS_${VARIABLE_NAME_TO_CHECK} True PARENT_SCOPE)
+            set(
+                _LAST_RUN_DIFFERS_${VARIABLE_NAME_TO_CHECK}
+                True
+                CACHE
+                INTERNAL
+                "Result flag of ${VARIABLE_NAME_TO_CHECK} variable for this run."
+            )
         endif ()
 
         # The check has been performed once. It will not be checked again this
         # run.
-        set(_LAST_RUN_CHECKED_${VARIABLE_NAME_TO_CHECK} True PARENT_SCOPE)
+        set(
+            _LAST_RUN_CHECKED_${VARIABLE_NAME_TO_CHECK}
+            True
+            CACHE
+            INTERNAL
+            "Checked flag of ${VARIABLE_NAME_TO_CHECK} variable for this run."
+        )
         # Update the backup in the cache for next run.
         set(
             _LAST_RUN_${VARIABLE_NAME_TO_CHECK}

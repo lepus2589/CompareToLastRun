@@ -13,7 +13,7 @@ include(FetchContent)
 FetchContent_Declare(
     CompareToLastRun
     GIT_REPOSITORY "https://github.com/lepus2589/CompareToLastRun.git"
-    GIT_TAG v1.0
+    GIT_TAG v1.1
 )
 FetchContent_MakeAvailable(CompareToLastRun)
 FetchContent_GetProperties(
